@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { GoogleMap, Polyline, OverlayView, Circle, useGoogleMap } from '@react-google-maps/api'
+import { GoogleMap, OverlayView, Circle, useGoogleMap } from '@react-google-maps/api'
 
 const MAP_STYLES = [
   { elementType: 'geometry', stylers: [{ color: '#0d0e17' }] },
@@ -290,6 +290,43 @@ function UserDot({ coords }) {
   ) : null
 }
 
+// Raw Google Maps Polyline — guaranteed to call setMap(null) on cleanup
+function RoutePolyline({ path }) {
+  const map = useGoogleMap()
+  const lineRef = useRef(null)
+
+  useEffect(() => {
+    if (!map || !window.google) return
+
+    // Remove any existing line first
+    if (lineRef.current) {
+      lineRef.current.setMap(null)
+      lineRef.current = null
+    }
+
+    // Only draw if we have a valid path
+    if (!path || path.length < 2) return
+
+    const line = new window.google.maps.Polyline({
+      path: path.map(([lat, lng]) => ({ lat, lng })),
+      strokeColor:   '#818cf8',
+      strokeWeight:  5,
+      strokeOpacity: 0.9,
+      geodesic:      true,
+      zIndex:        10,
+      map,
+    })
+    lineRef.current = line
+
+    return () => {
+      line.setMap(null)
+      lineRef.current = null
+    }
+  }, [map, path])
+
+  return null
+}
+
 export default function MapView({
   coords, places = [], selectedPlace, onSelectPlace, onNavigate,
   routePolyline, stops = [], followUser, onMapClick,
@@ -358,19 +395,7 @@ export default function MapView({
           <StopMarker key={`stop-${i}`} stop={s} idx={i} />
         ))}
 
-        {routePolyline && routePolyline.length > 1 && (
-          <Polyline
-            key={routePolyline[0]?.join() + routePolyline[routePolyline.length - 1]?.join()}
-            path={routePolyline.map(([lat, lng]) => ({ lat, lng }))}
-            options={{
-              strokeColor: '#818cf8',
-              strokeWeight: 5,
-              strokeOpacity: 0.9,
-              geodesic: true,
-              zIndex: 10,
-            }}
-          />
-        )}
+        <RoutePolyline path={routePolyline ?? null} />
       </GoogleMap>
 
       {/* Locate Me FAB */}
