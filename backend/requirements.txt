@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+python-multipart
+transformers
+torch
+torchvision
+Pillow
+mediapipe
+numpy
+python-dotenv
+google-genai
