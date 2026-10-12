@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { useLang, t } from '../i18n'
+import { speak } from '../utils/elevenlabs'
 
 const API_URL = import.meta.env.VITE_API_URL ?? ''
 
@@ -8,15 +9,6 @@ const CAT_COLORS = {
   nature: '#10b981', artwork: '#ec4899', person: '#818cf8', object: '#94a3b8', other: '#a78bfa',
 }
 
-function speak(text, lang) {
-  if (!window.speechSynthesis) return
-  window.speechSynthesis.cancel()
-  const u = new SpeechSynthesisUtterance(text)
-  u.lang = lang; u.rate = 0.92
-  const v = window.speechSynthesis.getVoices().find(v => v.lang.startsWith(lang))
-  if (v) u.voice = v
-  window.speechSynthesis.speak(u)
-}
 
 // Map screen coords → video pixel coords (accounts for object-cover letterboxing)
 function screenToVideo(sx, sy, containerW, containerH, videoW, videoH) {
@@ -209,7 +201,7 @@ function ResultPanel({ result, previewUrl, onClose, onRescan, language }) {
   const handleSpeak = () => {
     const text = buildSpeakText()
     setSpeaking(true)
-    speak(text, language)
+    speak(text)
     setTimeout(() => setSpeaking(false), Math.max(4000, text.length * 55))
   }
 

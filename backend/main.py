@@ -8,6 +8,7 @@ from routes.city_intel import router as city_intel_router
 from routes.nearby import router as nearby_router
 from routes.placeinfo import router as placeinfo_router
 from routes.route import router as route_router
+from routes.tts import router as tts_router
 
 app = FastAPI(title="TourGuide API", version="1.0.0")
 
@@ -27,6 +28,7 @@ app.include_router(city_intel_router, prefix="/api")
 app.include_router(nearby_router, prefix="/api")
 app.include_router(placeinfo_router, prefix="/api")
 app.include_router(route_router, prefix="/api")
+app.include_router(tts_router, prefix="/api")
 
 
 @app.get("/health")

@@ -228,7 +228,7 @@ async def city_intel(
 
     try:
         response = _client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-2.5-flash-lite",
             contents=[types.Part.from_text(text=prompt)],
             config=types.GenerateContentConfig(
                 system_instruction=SYSTEM,

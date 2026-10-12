@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { speak } from '../utils/elevenlabs'
 
 const AREA_PROFILES = {
   tourist: {
@@ -85,11 +86,8 @@ function classifyArea(places) {
 }
 
 function speakLocation(locationName) {
-  if (!window.speechSynthesis || !locationName) return
-  window.speechSynthesis.cancel()
-  const u = new SpeechSynthesisUtterance(`You are currently in ${locationName}`)
-  u.rate = 0.95
-  window.speechSynthesis.speak(u)
+  if (!locationName) return
+  speak(`You are currently in ${locationName}`)
 }
 
 export default function StrangerCard({ places, locationName, onCameraClick }) {

@@ -1,13 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
-
-const ELEVEN_KEY = import.meta.env.VITE_ELEVENLABS_API_KEY
+import { speak as elevenSpeak } from '../utils/elevenlabs'
 
 export default function GuidanceCard({ guidance, isLoadingGuidance }) {
   const [displayed, setDisplayed] = useState('')
   const [isPlaying, setIsPlaying] = useState(false)
   const [minimized, setMinimized] = useState(false)
   const indexRef = useRef(0)
-  const audioRef = useRef(null)
 
   // Auto-expand when new guidance arrives
   useEffect(() => {
@@ -29,35 +27,14 @@ export default function GuidanceCard({ guidance, isLoadingGuidance }) {
     return () => clearInterval(interval)
   }, [guidance])
 
-  const speak = async () => {
-    if (!ELEVEN_KEY || !guidance) return
-    if (audioRef.current) {
-      audioRef.current.pause()
-      URL.revokeObjectURL(audioRef.current.src)
-    }
+  const handleSpeak = async () => {
+    if (!guidance) return
     setIsPlaying(true)
-    try {
-      const res = await fetch(
-        'https://api.elevenlabs.io/v1/text-to-speech/21m00Tcm4TlvDq8ikWAM',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'xi-api-key': ELEVEN_KEY },
-          body: JSON.stringify({
-            text: guidance,
-            model_id: 'eleven_monolingual_v1',
-            voice_settings: { stability: 0.45, similarity_boost: 0.75 },
-          }),
-        }
-      )
-      const blob = await res.blob()
-      const url = URL.createObjectURL(blob)
-      const audio = new Audio(url)
-      audioRef.current = audio
+    const audio = await elevenSpeak(guidance)
+    if (audio) {
       audio.onended = () => setIsPlaying(false)
-      audio.play()
-    } catch (err) {
-      console.error('ElevenLabs error:', err)
-      setIsPlaying(false)
+    } else {
+      setTimeout(() => setIsPlaying(false), Math.max(3000, guidance.length * 55))
     }
   }
 
@@ -90,9 +67,9 @@ export default function GuidanceCard({ guidance, isLoadingGuidance }) {
             )}
           </div>
           <div className="flex items-center gap-2">
-            {ELEVEN_KEY && guidance && !minimized && (
+            {guidance && !minimized && (
               <button
-                onClick={(e) => { e.stopPropagation(); speak() }}
+                onClick={(e) => { e.stopPropagation(); handleSpeak() }}
                 disabled={isPlaying}
                 className="flex items-center gap-1 text-[8px] uppercase tracking-wider border border-green-500/25 px-1.5 py-0.5 text-green-400/50 hover:text-green-400 hover:border-green-400/50 transition-all disabled:opacity-20"
               >

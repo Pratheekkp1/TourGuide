@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { speak } from '../utils/elevenlabs'
 
 const API_URL = import.meta.env.VITE_API_URL ?? ''
 
@@ -17,17 +18,6 @@ const CATEGORY_ICONS = {
   services: '◧', info: 'i', other: '·',
 }
 
-function speak(text, langCode) {
-  if (!window.speechSynthesis) return
-  window.speechSynthesis.cancel()
-  const utterance = new SpeechSynthesisUtterance(text)
-  utterance.lang = langCode
-  utterance.rate = 0.9
-  const voices = window.speechSynthesis.getVoices()
-  const match = voices.find(v => v.lang.startsWith(langCode))
-  if (match) utterance.voice = match
-  window.speechSynthesis.speak(utterance)
-}
 
 export default function PlaceSheet({ place, language, locationName, onClose, onGetDirections }) {
   const [info, setInfo] = useState(null)
@@ -70,7 +60,7 @@ export default function PlaceSheet({ place, language, locationName, onClose, onG
       info.local_tip && `Local tip: ${info.local_tip}`,
     ].filter(Boolean).join('. ')
     setSpeaking(true)
-    speak(text, language)
+    speak(text)
     setTimeout(() => setSpeaking(false), Math.max(4000, text.length * 65))
   }
 

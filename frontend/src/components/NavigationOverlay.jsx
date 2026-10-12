@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useLang, t } from '../i18n'
 import StopSearchPanel from './StopSearchPanel'
+import { speak } from '../utils/elevenlabs'
 
 const ADVANCE_M = 25
 const ANNOUNCE_M = 80
@@ -28,12 +29,6 @@ const fmtEta = s => {
   return t.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})
 }
 
-function speak(text) {
-  if (!window.speechSynthesis) return
-  window.speechSynthesis.cancel()
-  const u = new SpeechSynthesisUtterance(text)
-  u.rate = 1.0; window.speechSynthesis.speak(u)
-}
 
 function getTurnIcon(maneuver='') {
   if (!maneuver || maneuver.startsWith('depart'))   return '↑'

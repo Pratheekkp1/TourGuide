@@ -9,3 +9,4 @@ mediapipe
 numpy
 python-dotenv
 google-genai
+httpx

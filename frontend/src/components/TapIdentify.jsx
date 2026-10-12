@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from 'react'
+import { speak } from '../utils/elevenlabs'
 
 const API_URL = import.meta.env.VITE_API_URL ?? ''
 
@@ -28,19 +29,6 @@ const CATEGORY_ICONS = {
   other: '◆',
 }
 
-// Browser SpeechSynthesis — free, supports 40+ languages
-function speak(text, langCode) {
-  if (!window.speechSynthesis) return
-  window.speechSynthesis.cancel()
-  const utterance = new SpeechSynthesisUtterance(text)
-  utterance.lang = langCode
-  utterance.rate = 0.9
-  // Try to find a voice for the language
-  const voices = window.speechSynthesis.getVoices()
-  const match = voices.find(v => v.lang.startsWith(langCode))
-  if (match) utterance.voice = match
-  window.speechSynthesis.speak(utterance)
-}
 
 function TapRipple({ x, y }) {
   return (
@@ -70,7 +58,7 @@ function IdentifyModal({ result, onClose, language }) {
 
   const handleSpeak = () => {
     setSpeaking(true)
-    speak(fullText, language)
+    speak(fullText)
     // Estimate duration and reset
     const duration = Math.max(3000, fullText.length * 60)
     setTimeout(() => setSpeaking(false), duration)

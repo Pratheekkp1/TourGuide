@@ -77,7 +77,7 @@ Return ONLY a raw JSON object — no markdown, no code fences:
 }}"""
 
     try:
-        response = _client.models.generate_content(model="gemini-2.5-flash", contents=prompt)
+        response = _client.models.generate_content(model="gemini-2.5-flash-lite", contents=prompt)
         raw = response.text.strip()
         if raw.startswith("```"):
             raw = raw.split("```")[1]

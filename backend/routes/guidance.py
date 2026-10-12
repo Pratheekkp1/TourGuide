@@ -47,7 +47,7 @@ Tone: calm, direct, like advice from a local friend. Max 65 words. No bullet poi
 
     try:
         response = _client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-2.5-flash-lite",
             contents=prompt,
         )
         return {"guidance": response.text.strip()}

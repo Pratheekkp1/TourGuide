@@ -157,7 +157,7 @@ async def identify(
 
     try:
         response = _client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-2.5-flash-lite",
             contents=[
                 types.Part.from_bytes(data=image_bytes, mime_type="image/jpeg"),
                 types.Part.from_text(text=prompt),
